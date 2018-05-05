@@ -19,10 +19,10 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-        <a class="navbar-brand" href="#">City Guide</a>
+        <a class="navbar-brand" href="/home">City Guide</a>
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/home">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/tour/all">Tours</a>
@@ -41,14 +41,28 @@
                     th:value="${cityItem.id}" th:text="${cityItem.name}">
             </option>
         </select>
-        <input type="search" name="name" class="form-control mr-sm-2" placeholder="Enter place name" aria-label="Search">
+        <input type="search" name="name" class="form-control mr-sm-2" placeholder="Enter place name"
+               aria-label="Search">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
 </div>
 
+<div th:if="${not #lists.isEmpty(placeList)}">
+    <div class="container-fluid card-columns mx-2">
+        <div class="card" th:each="place : ${placeList}">
+            <img class="card-img-top" th:src="'/images/'+${place.id}+'.jpg'" th:alt="${place.name}">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${place.name}"></h5>
+                <!--<p class="card-text">Text</p>-->
+                <a th:href="@{/place/get(id=${place.id})}" class="btn btn-primary">More</a>
+            </div>
+            <div class="card-footer">
+                <p th:text="${place.rating}+'/5'"></p>
+            </div>
+        </div>
+    </div>
+</div>
 
-<p th:text="${param.city != null} ? ${param.city} : 'null value!'" />
-<p th:text="${param.name != null} ? ${param.name} : 'null value!'" />
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -59,5 +73,11 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
         integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
         crossorigin="anonymous"></script>
+<script language="JavaScript">
+    document.addEventListener('DOMContentLoaded', function() {
+       // alert("Ready!");
+    }, false);
+
+</script>
 </body>
 </html>
