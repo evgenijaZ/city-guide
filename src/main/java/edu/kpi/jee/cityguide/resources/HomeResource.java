@@ -9,34 +9,36 @@ import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 
 @Controller
 public class HomeResource {
-    @Autowired
-    private PlaceRepository placeRepository;
-    @Autowired
-    private CityRepository cityRepository;
+    private final PlaceRepository placeRepository;
+    private final CityRepository cityRepository;
 
-    @GetMapping(value={"","/","/home","/index"})
-    public String searchForm(HttpSession session, Model model) {
-        if (!model.containsAttribute("place")) {
-            Place place = new Place();
-            place.setCity(new City());
-            model.addAttribute("place", place);
-        }
-        if (session.getAttribute("cityList")==null) {
+    @Autowired
+    public HomeResource(PlaceRepository placeRepository, CityRepository cityRepository) {
+        this.placeRepository = placeRepository;
+        this.cityRepository = cityRepository;
+    }
+
+    @GetMapping(value = {"", "/", "/home", "/index"})
+    public String init(HttpSession session) {
+        if (session.getAttribute("cityList") == null) {
             session.setAttribute("cityList", cityRepository.findAll());
         }
         return "home";
     }
 
     @GetMapping(value = "/search")
-    public String searchSubmit(@RequestParam(value = "city", required = true) int id,
-                               @RequestParam(value = "name", required = true) String name,
-                               Model model) {
+    public String searchSubmit(@RequestParam(value = "city") int id,
+                               @RequestParam(value = "name") String name,
+                               ModelAndView model) {
         if (id == 0 && name.isEmpty()) return "redirect:place/all";
-        return "home";
+        if (id != 0 && name.isEmpty()) return "redirect:place/search?city=" + id;
+        if (id != 0) return "redirect:place/search?name=" + name + "&city=" + id;
+        return "redirect:place/search?name=" + name;
     }
 }
