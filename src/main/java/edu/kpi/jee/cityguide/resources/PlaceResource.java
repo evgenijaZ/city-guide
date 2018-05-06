@@ -33,7 +33,7 @@ public class PlaceResource {
 
     @GetMapping(value = "/all")
     public ModelAndView getAll(HttpSession session, ModelAndView model) {
-        if(!model.hasView())model.setViewName("home");
+        if (!model.hasView()) model.setViewName("home");
         model.addObject("placeList", repository.findAll());
         if (session.getAttribute("cityList") == null) {
             session.setAttribute("cityList", cityRepository.findAll());
@@ -42,19 +42,22 @@ public class PlaceResource {
     }
 
     @GetMapping(value = "/get")
-    public Place getById(@RequestParam(value = "id", required = false) int id) {
-        return repository.getOne(id);
+    public ModelAndView getById(@RequestParam(value = "id") int id) {
+        ModelAndView modelAndView = new ModelAndView("place");
+        modelAndView.addObject("place", repository.getOne(id));
+        return modelAndView;
     }
 
 
     @GetMapping(value = "/search")
-    public ModelAndView getById(@RequestParam(value = "city", required = false) int id, @RequestParam(value = "name", required = false) String name, ModelAndView modelAndView) {
-        if(!modelAndView.hasView())modelAndView.setViewName("home");
-        List<Place> places;
-        if (id == 0) places = repository.findAllByNameContainsAndCity(name, cityRepository.getOne(id));
+    public ModelAndView getById(@RequestParam(value = "city", required = false) Integer id, @RequestParam(value = "name", required = false) String name, ModelAndView modelAndView) {
+        if (!modelAndView.hasView()) modelAndView.setViewName("home");
+        List<Place> places = null;
+        if (id != null && id != 0 && name != null)
+            places = repository.findAllByNameContainsAndCity(name, cityRepository.getOne(id));
         else if (name != null && !name.isEmpty())
             places = repository.findAllByNameContains(name);
-        else places = repository.findAllByCity(cityRepository.getOne(id));
+        else if (id != null && id != 0) places = repository.findAllByCity(cityRepository.getOne(id));
         if (places != null)
             modelAndView.addObject("placeList", places);
         return modelAndView;
