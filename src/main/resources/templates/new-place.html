@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
           integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
 
-    <title>Place | City Guide</title>
+    <title>Add place | City Guide</title>
 </head>
 <body>
 
@@ -22,7 +22,7 @@
         <a class="navbar-brand" href="/home">City Guide</a>
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item active">
-                <a class="nav-link" href="/home">Home<span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/home">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/tour/all">Tours</a>
@@ -31,39 +31,35 @@
     </div>
 </nav>
 
-<!-- Content -->
+<!--Form-->
 <div class="card">
-    <div class="card-header">
-        <ul class="nav nav-pills card-header-pills mx-2">
-            <li class="nav-item">
-                <a class="nav-link active" href="/place/new">New</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link disabled" href="#">Delete</a>
-            </li>
-        </ul>
-    </div>
+    <div class="card-header"></div>
     <div class="card-body mx-2">
-        <h5 class="card-title"  th:text="${place.name}"></h5>
-        <div class="row my-1">
-            <div class="col">
-                <img class="img-fluid" style="width: 100%; height: 35vw; object-fit: cover;"
-                     th:src="'/images/'+${place.id}+'.jpg'" th:alt="${place.name}">
-            </div>
-            <div class="col">
-                <p th:text="${place.name}"></p>
-                <p th:text="${place.address}"></p>
-                <p th:text="${place.description}"></p>
-                <p th:text="${place.rating}+'/5'"></p>
-            </div>
-        </div>
-        <div class="row my-2"> <div class="col">
-            <iframe width="100%" height="300px" frameborder="0" style="border:0"
-                    th:src="'https://www.google.com/maps/embed/v1/search?q='+${#strings.replace(place.name+' '+place.city.name,' ','%20')}+'&key=AIzaSyDebt79BmjAckenax9bdy43c0tXVXKY_8c'"
-                    allowfullscreen></iframe></div>
-        </div>
+<form th:object="${place}" action="#" th:action="@{/place}" method="post">
+    <div class="form-group">
+        <label for="editPlaceFormName">Name</label>
+        <input type="text" class="form-control" th:field="*{name}" id="editPlaceFormName" placeholder="Place name" required>
+        <small id="nameHelp" class="form-text text-muted">Please enter a recognizable name.</small>
     </div>
-</div>
+    <div class="form-group">
+        <label for="editPlaceFormCity">Select city</label>
+        <select class="form-control" th:field="*{city.id}" id="editPlaceFormCity">
+            <option th:each="cityItem : ${session.cityList}"
+                    th:value="${cityItem.id}" th:text="${cityItem.name}">
+            </option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="editPlaceFormAddress">Address</label>
+        <input type="text" class="form-control" th:field="*{address}" id="editPlaceFormAddress" placeholder="Place address" required>
+    </div>
+    <div class="form-group">
+        <label for="editPlaceFormDescription">Description</label>
+        <textarea class="form-control" th:field="*{description}" id="editPlaceFormDescription" rows="3" maxlength="500" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+</form></div></div>
+
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"

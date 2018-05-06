@@ -5,15 +5,11 @@ import edu.kpi.jee.cityguide.entities.Place;
 import edu.kpi.jee.cityguide.repositories.CityRepository;
 import edu.kpi.jee.cityguide.repositories.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
-import java.net.HttpCookie;
 import java.util.List;
 
 
@@ -61,5 +57,23 @@ public class PlaceResource {
         if (places != null)
             modelAndView.addObject("placeList", places);
         return modelAndView;
+    }
+
+    @GetMapping (value = "/new")
+    public ModelAndView newPlace(HttpSession session, ModelAndView modelAndView){
+        if (session.getAttribute("cityList") == null) {
+            session.setAttribute("cityList", cityRepository.findAll());
+        }
+        modelAndView.addObject("place", new Place());
+        modelAndView.setViewName("new-place");
+        return modelAndView;
+    }
+
+    @PostMapping
+    public ModelAndView createPlace(@ModelAttribute Place place, RedirectAttributes redirectAttributes){
+        place = repository.save(place);
+        repository.flush();
+        redirectAttributes.addAttribute("id", place.getId());
+        return new ModelAndView("place");
     }
 }
