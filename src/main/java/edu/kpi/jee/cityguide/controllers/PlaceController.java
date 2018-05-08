@@ -2,9 +2,9 @@ package edu.kpi.jee.cityguide.controllers;
 
 
 import edu.kpi.jee.cityguide.entities.Place;
-import edu.kpi.jee.cityguide.repositories.CategoryRepository;
-import edu.kpi.jee.cityguide.repositories.CityRepository;
-import edu.kpi.jee.cityguide.repositories.PlaceRepository;
+import edu.kpi.jee.cityguide.services.CategoryService;
+import edu.kpi.jee.cityguide.services.CityService;
+import edu.kpi.jee.cityguide.services.PlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,26 +17,24 @@ import java.util.List;
 @RestController
 @RequestMapping("place")
 public class PlaceController {
-    private final
-    PlaceRepository repository;
-    private final
-    CityRepository cityRepository;
-    private
-    final CategoryRepository categoryRepository;
+    private final PlaceService service;
+    private final CityService cityService;
+    private final CategoryService categoryService;
+
 
     @Autowired
-    public PlaceController(PlaceRepository repository, CityRepository cityRepository, CategoryRepository categoryRepository) {
-        this.repository = repository;
-        this.cityRepository = cityRepository;
-        this.categoryRepository = categoryRepository;
+    public PlaceController(PlaceService service, CityService cityService, CategoryService categoryService) {
+        this.service = service;
+        this.cityService = cityService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping(value = "/all")
     public ModelAndView getAll(HttpSession session, ModelAndView model) {
         if (!model.hasView()) model.setViewName("home");
-        model.addObject("placeList", repository.findAll());
+        model.addObject("placeList", service.getAll());
         if (session.getAttribute("cityList") == null) {
-            session.setAttribute("cityList", cityRepository.findAll());
+            session.setAttribute("cityList", cityService.getAll());
         }
         return model;
     }
@@ -44,7 +42,7 @@ public class PlaceController {
     @GetMapping
     public ModelAndView getById(@RequestParam(value = "id") int id) {
         ModelAndView modelAndView = new ModelAndView("place");
-        modelAndView.addObject("place", repository.getOne(id));
+        modelAndView.addObject("place", service.getById(id));
         return modelAndView;
     }
 
@@ -52,12 +50,8 @@ public class PlaceController {
     @GetMapping(value = "/search")
     public ModelAndView getById(@RequestParam(value = "city", required = false) Integer id, @RequestParam(value = "name", required = false) String name, ModelAndView modelAndView) {
         if (!modelAndView.hasView()) modelAndView.setViewName("home");
-        List<Place> places = null;
-        if (id != null && id != 0 && name != null)
-            places = repository.findAllByNameContainsAndCity(name, cityRepository.getOne(id));
-        else if (name != null && !name.isEmpty())
-            places = repository.findAllByNameContains(name);
-        else if (id != null && id != 0) places = repository.findAllByCity(cityRepository.getOne(id));
+        List<Place> places
+                 = service.search(id, name);
         if (places != null)
             modelAndView.addObject("placeList", places);
         return modelAndView;
@@ -67,10 +61,10 @@ public class PlaceController {
     public ModelAndView newPlace(HttpSession session,
                                  ModelAndView modelAndView) {
         if (session.getAttribute("cityList") == null) {
-            session.setAttribute("cityList", cityRepository.findAll());
+            session.setAttribute("cityList", cityService.getAll());
         }
         if (session.getAttribute("categoryList") == null) {
-            session.setAttribute("categoryList", categoryRepository.findAll());
+            session.setAttribute("categoryList", categoryService.getAll());
         }
         modelAndView.addObject("place", new Place());
         modelAndView.setViewName("new-place");
@@ -80,22 +74,20 @@ public class PlaceController {
     @PostMapping
     public ModelAndView createPlace(@ModelAttribute Place place,
                                     RedirectAttributes redirectAttributes) {
-        place = repository.save(place);
-        repository.flush();
+        place = service.create(place);
         redirectAttributes.addAttribute("id", place.getId());
         return new ModelAndView("place");
     }
 
     @DeleteMapping
     public ModelAndView deletePlace(@RequestParam int id) {
-        repository.deleteById(id);
+        service.deleteById(id);
         return new ModelAndView("home");
     }
 
     @PostMapping(value = "/delete")
     public ModelAndView postDeletePlace(@RequestParam int id) {
-        repository.deleteById(id);
-        repository.flush();
+        service.deleteById(id);
         return new ModelAndView("redirect:home");
     }
 
@@ -103,7 +95,7 @@ public class PlaceController {
     public ModelAndView updatePlace(@ModelAttribute Place place,
                                     RedirectAttributes redirectAttributes) {
         if (place != null) {
-            repository.save(place);
+            service.update(place);
             redirectAttributes.addAttribute("id", place.getId());
         }
         return new ModelAndView("place");
@@ -113,15 +105,14 @@ public class PlaceController {
     public ModelAndView editPlace(@ModelAttribute("place") Place place,
                                   @RequestParam int id,
                                   HttpSession session) {
-
         if (session.getAttribute("cityList") == null) {
-            session.setAttribute("cityList", cityRepository.findAll());
+            session.setAttribute("cityList", cityService.getAll());
         }
         if (session.getAttribute("categoryList") == null) {
-            session.setAttribute("categoryList", categoryRepository.findAll());
+            session.setAttribute("categoryList", categoryService.getAll());
         }
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("place", repository.getOne(id));
+        modelAndView.addObject("place", service.getById(id));
         modelAndView.setViewName("edit-place");
         return modelAndView;
     }
@@ -130,7 +121,7 @@ public class PlaceController {
     public ModelAndView postUpdatePlace(@ModelAttribute("place") Place place,
                                         RedirectAttributes redirectAttributes) {
         if (place != null) {
-            repository.saveAndFlush(place);
+            service.update(place);
             redirectAttributes.addAttribute("id", place.getId());
         }
         return new ModelAndView("place");

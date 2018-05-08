@@ -1,7 +1,7 @@
 package edu.kpi.jee.cityguide.controllers;
 
 import edu.kpi.jee.cityguide.entities.Tour;
-import edu.kpi.jee.cityguide.repositories.TourRepository;
+import edu.kpi.jee.cityguide.services.TourService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,22 +13,22 @@ import java.util.List;
 @RestController
 @RequestMapping("tour")
 public class TourController {
-    private final
-    TourRepository repository;
+    private final TourService service;
 
     @Autowired
-    public TourController(TourRepository repository) {
-        this.repository = repository;
+    public TourController(TourService service) {
+        this.service = service;
     }
+
 
     @GetMapping(value = "/all")
     public List<Tour> getAll() {
-        return repository.findAll();
+        return service.getAll();
     }
 
     @GetMapping
     public Tour getById(@RequestParam(value = "id") int id) {
-        return repository.getOne(id);
+        return service.getById(id);
     }
 
 }
