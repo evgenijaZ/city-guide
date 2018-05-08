@@ -1,4 +1,4 @@
-package edu.kpi.jee.cityguide.resources;
+package edu.kpi.jee.cityguide.controllers;
 
 import edu.kpi.jee.cityguide.entities.Tour;
 import edu.kpi.jee.cityguide.repositories.TourRepository;
@@ -12,12 +12,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("tour")
-public class TourResource {
+public class TourController {
     private final
     TourRepository repository;
 
     @Autowired
-    public TourResource(TourRepository repository) {
+    public TourController(TourRepository repository) {
         this.repository = repository;
     }
 
@@ -26,14 +26,9 @@ public class TourResource {
         return repository.findAll();
     }
 
-    @GetMapping(value = "/get")
+    @GetMapping
     public Tour getById(@RequestParam(value = "id") int id) {
         return repository.getOne(id);
     }
 
-//    @PostMapping(value = "/load")
-//    public List<Tour> persist(@RequestBody final Tour tour) {
-//        repository.save(Tour);
-//        return repository.findAll();
-//    }
 }

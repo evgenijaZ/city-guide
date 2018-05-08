@@ -2,11 +2,17 @@ package edu.kpi.jee.cityguide.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
+@Data
+@ToString(exclude = "places")
+@EqualsAndHashCode(exclude = "places")
 @Table(name = "city")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class City {
@@ -18,31 +24,4 @@ public class City {
     @OneToMany(mappedBy = "city")
     @JsonManagedReference
     private Set<Place> places;
-
-    public City() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<Place> getPlaces() {
-        return places;
-    }
-
-    public void setPlaces(Set<Place> places) {
-        this.places = places;
-    }
 }

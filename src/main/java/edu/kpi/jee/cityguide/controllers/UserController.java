@@ -1,4 +1,4 @@
-package edu.kpi.jee.cityguide.resources;
+package edu.kpi.jee.cityguide.controllers;
 
 import edu.kpi.jee.cityguide.entities.User;
 import edu.kpi.jee.cityguide.repositories.UserRepository;
@@ -12,12 +12,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("user")
-public class UserResource {
+public class UserController {
     private final
     UserRepository repository;
 
     @Autowired
-    public UserResource(UserRepository repository) {
+    public UserController(UserRepository repository) {
         this.repository = repository;
     }
 
@@ -26,14 +26,8 @@ public class UserResource {
         return repository.findAll();
     }
 
-    @GetMapping(value = "/get")
+    @GetMapping
     public User getById(@RequestParam(value = "id") int id) {
         return repository.getOne(id);
     }
-
-//    @PostMapping(value = "/load")
-//    public List<User> persist(@RequestBody final User user) {
-//        repository.save(user);
-//        return repository.findAll();
-//    }
 }

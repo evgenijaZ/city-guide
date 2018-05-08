@@ -1,4 +1,4 @@
-package edu.kpi.jee.cityguide.resources;
+package edu.kpi.jee.cityguide.controllers;
 
 import edu.kpi.jee.cityguide.entities.City;
 import edu.kpi.jee.cityguide.repositories.CityRepository;
@@ -12,12 +12,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("city")
-public class CityResource {
+public class CityController {
     private final
     CityRepository repository;
 
     @Autowired
-    public CityResource(CityRepository repository) {
+    public CityController(CityRepository repository) {
         this.repository = repository;
     }
 
@@ -26,14 +26,8 @@ public class CityResource {
         return repository.findAll();
     }
 
-    @GetMapping(value = "/get")
+    @GetMapping
     public City getById(@RequestParam(value = "id") int id) {
         return repository.getOne(id);
     }
-
-//    @PostMapping(value = "/load")
-//    public List<City> persist(@RequestBody final City city) {
-//        repository.save(City);
-//        return repository.findAll();
-//    }
 }

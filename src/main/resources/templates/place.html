@@ -13,16 +13,16 @@
 <body>
 
 <!--Navigation bar-->
-<nav class="navbar navbar-expand-md navbar-dark bg-primary">
+<nav class="navbar navbar-expand-md navbar-dark bg-info">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01"
             aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-        <a class="navbar-brand" href="/home">City Guide</a>
+        <a class="navbar-brand" href="/">City Guide</a>
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item active">
-                <a class="nav-link" href="/home">Home<span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/home">Home</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/tour/all">Tours</a>
@@ -33,34 +33,51 @@
 
 <!-- Content -->
 <div class="card">
-    <div class="card-header">
+    <div class="card-header ">
         <ul class="nav nav-pills card-header-pills mx-2">
-            <li class="nav-item">
-                <a class="nav-link active" href="/place/new">New</a>
+            <li class="nav-item mx-1">
+                <form action="#" th:action="@{/place/new}" method="get">
+                    <button type="submit" class="btn btn-secondary">Add new</button>
+                </form>
             </li>
-            <li class="nav-item">
-                <a class="nav-link disabled" href="#">Delete</a>
+            <li class="nav-item mx-1">
+                <form action="#" th:action="@{/place/edit}" method="get">
+                    <input type="hidden" name="id" th:value="${place.id}"/>
+                    <button type="submit" class="btn btn-light">Edit</button>
+                </form>
             </li>
+            <li  class="nav-item mx-1">
+                <form action="#" th:action="@{/place/delete}" method="post">
+                    <!--<button th:onclick="'javascript:putRequest(' + ${place.id} + ')'" type="submit">Delete</button>-->
+                    <input type="hidden" name="id" th:value="${place.id}"/>
+                    <button type="submit" class="btn btn-light">Delete</button>
+                </form>
+            </li>
+
         </ul>
     </div>
     <div class="card-body mx-2">
-        <h5 class="card-title"  th:text="${place.name}"></h5>
+        <h4 class="card-title display-4" th:text="${place.name}"></h4>
         <div class="row my-1">
             <div class="col">
                 <img class="img-fluid" style="width: 100%; height: 35vw; object-fit: cover;"
                      th:src="'/images/'+${place.id}+'.jpg'" th:alt="${place.name}">
             </div>
             <div class="col">
-                <p th:text="${place.name}"></p>
-                <p th:text="${place.address}"></p>
-                <p th:text="${place.description}"></p>
-                <p th:text="${place.rating}+'/5'"></p>
+                <h5 th:text="${place.name}"></h5>
+                <th:block th:each="category: ${place.categories}">
+                    <span class="badge badge-pill badge-info" th:text="${category.name}"></span>
+                </th:block>
+                <p class="lead" th:text="${place.description}"></p>
+                    <address th:text="'Address: '+${place.address}"></address>
             </div>
         </div>
-        <div class="row my-2"> <div class="col">
-            <iframe width="100%" height="300px" frameborder="0" style="border:0"
-                    th:src="'https://www.google.com/maps/embed/v1/search?q='+${#strings.replace(place.name+' '+place.city.name,' ','%20')}+'&key=AIzaSyDebt79BmjAckenax9bdy43c0tXVXKY_8c'"
-                    allowfullscreen></iframe></div>
+        <div class="row my-2">
+            <div class="col">
+                <iframe width="100%" height="300px" frameborder="0" style="border:0"
+                        th:src="'https://www.google.com/maps/embed/v1/search?q='+${#strings.replace(place.name+' '+place.city.name,' ','%20')}+'&key=AIzaSyDebt79BmjAckenax9bdy43c0tXVXKY_8c'"
+                        allowfullscreen></iframe>
+            </div>
         </div>
     </div>
 </div>
@@ -71,5 +88,13 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
         integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
         crossorigin="anonymous"></script>
+<!--<script language="JavaScript">-->
+<!--var xhr = new XMLHttpRequest();-->
+<!--var url = "/place/delete";-->
+<!--function putRequest(id) {-->
+<!--xhr.open('DELETE', url, true);  // true : asynchrone false: synchrone-->
+<!--xhr.send("id=" + id);-->
+<!--}-->
+<!--</script>-->
 </body>
 </html>
