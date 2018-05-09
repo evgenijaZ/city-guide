@@ -1,10 +1,15 @@
 package edu.kpi.jee.cityguide.controllers;
 
+import edu.kpi.jee.cityguide.entities.User;
 import edu.kpi.jee.cityguide.repositories.CityRepository;
+import edu.kpi.jee.cityguide.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 
@@ -17,12 +22,16 @@ public class HomeController {
         this.cityRepository = cityRepository;
     }
 
-    @GetMapping(value = {"", "/", "/home", "/index"})
-    public String init(HttpSession session) {
+    @GetMapping(value = {"","/", "/home", "/index"})
+    public ModelAndView init(HttpSession session) {
         if (session.getAttribute("cityList") == null) {
             session.setAttribute("cityList", cityRepository.findAll());
         }
-        return "home";
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        User user = userService.findUserByEmail(auth.getName());
+//        if (user != null)
+//            session.setAttribute("user", user.getName());
+        return new ModelAndView("home");
     }
 
     @GetMapping(value = "/search")

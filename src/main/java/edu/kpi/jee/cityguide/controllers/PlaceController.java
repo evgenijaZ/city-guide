@@ -23,14 +23,16 @@ public class PlaceController {
 
 
     @Autowired
-    public PlaceController(PlaceService service, CityService cityService, CategoryService categoryService) {
+    public PlaceController(PlaceService service, CityService cityService,
+                           CategoryService categoryService) {
         this.service = service;
         this.cityService = cityService;
         this.categoryService = categoryService;
     }
 
     @GetMapping(value = "/all")
-    public ModelAndView getAll(HttpSession session, ModelAndView model) {
+    public ModelAndView getAll(HttpSession session,
+                               ModelAndView model) {
         if (!model.hasView()) model.setViewName("home");
         model.addObject("placeList", service.getAll());
         if (session.getAttribute("cityList") == null) {
@@ -48,10 +50,13 @@ public class PlaceController {
 
 
     @GetMapping(value = "/search")
-    public ModelAndView getById(@RequestParam(value = "city", required = false) Integer id, @RequestParam(value = "name", required = false) String name, ModelAndView modelAndView) {
+    public ModelAndView getById(@RequestParam(value = "city", required = false) Integer id,
+                                @RequestParam(value = "name", required = false) String name,
+                                ModelAndView modelAndView
+    ) {
         if (!modelAndView.hasView()) modelAndView.setViewName("home");
         List<Place> places
-                 = service.search(id, name);
+                = service.search(id, name);
         if (places != null)
             modelAndView.addObject("placeList", places);
         return modelAndView;
@@ -80,15 +85,15 @@ public class PlaceController {
     }
 
     @DeleteMapping
-    public ModelAndView deletePlace(@RequestParam int id) {
+    public String deletePlace(@RequestParam int id) {
         service.deleteById(id);
-        return new ModelAndView("home");
+        return "home";
     }
 
     @PostMapping(value = "/delete")
     public ModelAndView postDeletePlace(@RequestParam int id) {
         service.deleteById(id);
-        return new ModelAndView("redirect:home");
+        return new ModelAndView("home");
     }
 
     @PutMapping
