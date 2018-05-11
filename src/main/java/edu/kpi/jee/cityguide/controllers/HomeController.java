@@ -1,37 +1,31 @@
 package edu.kpi.jee.cityguide.controllers;
 
-import edu.kpi.jee.cityguide.entities.User;
 import edu.kpi.jee.cityguide.repositories.CityRepository;
-import edu.kpi.jee.cityguide.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.view.InternalResourceView;
 
 import javax.servlet.http.HttpSession;
 
 @Controller
 public class HomeController {
     private final CityRepository cityRepository;
-
     @Autowired
     public HomeController(CityRepository cityRepository) {
         this.cityRepository = cityRepository;
     }
 
-    @GetMapping(value = {"","/", "/home", "/index"})
-    public ModelAndView init(HttpSession session) {
+    @GetMapping(value = {"", "/", "/home", "/index"})
+    public View init(HttpSession session) {
         if (session.getAttribute("cityList") == null) {
             session.setAttribute("cityList", cityRepository.findAll());
         }
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        User user = userService.findUserByEmail(auth.getName());
-//        if (user != null)
-//            session.setAttribute("user", user.getName());
-        return new ModelAndView("home");
+        return new InternalResourceView("/place/all");
     }
 
     @GetMapping(value = "/search")

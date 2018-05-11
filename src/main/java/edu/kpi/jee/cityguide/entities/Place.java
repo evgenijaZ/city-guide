@@ -51,23 +51,6 @@ public class Place {
     )
     private Set<Tour> tours;
 
-//    @OneToMany(mappedBy = "place")
-//    @JsonManagedReference
-//    private Set<Rating> ratings;
-
-//    public void addRating(Rating rating) {
-//        ratings.add(rating);
-//    }
-//
-//    public float getRating() {
-//        if (ratings == null || ratings.size()==0) return 0;
-//        float resultRating = 0;
-//        for (Rating rating : ratings) {
-//            resultRating += rating.getValue() / ratings.size();
-//        }
-//        return resultRating;
-//    }
-
     public boolean hasCategory(Category category) {
         return categories.contains(category);
     }
