@@ -1,5 +1,7 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -24,9 +26,16 @@
             <li class="nav-item active">
                 <a class="nav-link" href="/home">Home</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/logout/form">Log in/out</a>
-            </li>
+            <div sec:authorize="!isAuthenticated()">
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Log in</a>
+                </li>
+            </div>
+            <div sec:authorize="isAuthenticated()">
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout/form">Log out</a>
+                </li>
+            </div>
         </ul>
     </div>
 </nav>
@@ -37,7 +46,7 @@
     <div class="card-body mx-2">
         <form th:object="${place}" action="#" th:action="@{/place/save}" method="post">
             <input type="hidden" th:field="*{id}"/>
-
+            <input type="hidden" th:field="*{author}"/>
             <div class="form-group">
                 <label for="editPlaceFormName">Name</label>
                 <input type="text" class="form-control" th:field="*{name}" id="editPlaceFormName"
@@ -47,8 +56,8 @@
             <div class="form-group">
                 <label for="editPlaceFormCategory">Select categories</label>
                 <ul class="list-unstyled" id="editPlaceFormCategory">
-                    <li th:each="category : ${session.categoryList}" >
-                        <input type="checkbox" th:field="*{categories}" th:value="${category.id}" />
+                    <li th:each="category : ${session.categoryList}">
+                        <input type="checkbox" th:field="*{categories}" th:value="${category.id}"/>
                         <label th:for="${#ids.prev('categories')}"
                                th:text="${category.name}"></label>
                     </li>

@@ -13,8 +13,8 @@ import java.util.Set;
 
 @Entity
 @Data
-@ToString(exclude = {"city", "categories", "tours"})
-@EqualsAndHashCode(exclude = {"city", "categories", "tours"})
+@ToString(exclude = {"city","author", "categories", "tours"})
+@EqualsAndHashCode(exclude = {"city","author", "categories", "tours"})
 @Table(name = "place")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Place {
@@ -32,7 +32,10 @@ public class Place {
     private String address;
     @Column(name = "p_description")
     private String description;
-
+    @ManyToOne
+    @JoinColumn(name = "p_author", nullable = false)
+    @JsonBackReference
+    private User author;
     @ManyToMany(cascade = {CascadeType.ALL})
     @JsonManagedReference
     @JoinTable(

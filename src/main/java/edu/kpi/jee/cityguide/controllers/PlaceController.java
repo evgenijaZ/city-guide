@@ -5,13 +5,17 @@ import edu.kpi.jee.cityguide.entities.Place;
 import edu.kpi.jee.cityguide.services.CategoryService;
 import edu.kpi.jee.cityguide.services.CityService;
 import edu.kpi.jee.cityguide.services.PlaceService;
+import edu.kpi.jee.cityguide.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Objects;
 
 
 @RestController
@@ -20,7 +24,8 @@ public class PlaceController {
     private final PlaceService service;
     private final CityService cityService;
     private final CategoryService categoryService;
-
+    @Autowired
+    UserService userService;
 
     @Autowired
     public PlaceController(PlaceService service, CityService cityService,
@@ -44,7 +49,12 @@ public class PlaceController {
     @GetMapping
     public ModelAndView getById(@RequestParam(value = "id") int id) {
         ModelAndView modelAndView = new ModelAndView("place");
-        modelAndView.addObject("place", service.getById(id));
+        Place place = service.getById(id);
+        modelAndView.addObject("place", place);
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String email = loggedInUser.getName();
+        boolean isAuthor = email.equals(place.getAuthor().getEmail());
+        modelAndView.addObject("isAuthor", isAuthor);
         return modelAndView;
     }
 
@@ -55,8 +65,19 @@ public class PlaceController {
                                 ModelAndView modelAndView
     ) {
         if (!modelAndView.hasView()) modelAndView.setViewName("home");
-        List<Place> places
-                = service.search(id, name);
+        List<Place> places = service.search(id, name);
+        if (places != null)
+            modelAndView.addObject("placeList", places);
+        return modelAndView;
+    }
+
+    @GetMapping(value = "/my-list")
+    public ModelAndView getByUser(ModelAndView modelAndView) {
+        if (!modelAndView.hasView()) modelAndView.setViewName("home");
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String email = loggedInUser.getName();
+        List<Place> places = service.searchByAuthor(userService.findUserByEmail(email));
         if (places != null)
             modelAndView.addObject("placeList", places);
         return modelAndView;
@@ -81,7 +102,9 @@ public class PlaceController {
                                     RedirectAttributes redirectAttributes) {
         place = service.create(place);
         redirectAttributes.addAttribute("id", place.getId());
-        return new ModelAndView("place");
+        ModelAndView modelAndView = new ModelAndView("place");
+        modelAndView.addObject("isAuthor", true);
+        return modelAndView;
     }
 
     @DeleteMapping
@@ -103,7 +126,9 @@ public class PlaceController {
             service.update(place);
             redirectAttributes.addAttribute("id", place.getId());
         }
-        return new ModelAndView("place");
+        ModelAndView modelAndView = new ModelAndView("place");
+        modelAndView.addObject("isAuthor", true);
+        return modelAndView;
     }
 
     @GetMapping("/edit")
@@ -129,6 +154,8 @@ public class PlaceController {
             service.update(place);
             redirectAttributes.addAttribute("id", place.getId());
         }
-        return new ModelAndView("place");
+        ModelAndView modelAndView = new ModelAndView("place");
+        modelAndView.addObject("isAuthor", true);
+        return modelAndView;
     }
 }

@@ -1,7 +1,7 @@
 package edu.kpi.jee.cityguide.services;
 
 import edu.kpi.jee.cityguide.entities.Place;
-import edu.kpi.jee.cityguide.repositories.CategoryRepository;
+import edu.kpi.jee.cityguide.entities.User;
 import edu.kpi.jee.cityguide.repositories.CityRepository;
 import edu.kpi.jee.cityguide.repositories.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,5 +51,10 @@ public class PlaceService {
 
     public void update(Place place) {
         repository.saveAndFlush(place);
+    }
+
+    public List<Place> searchByAuthor(User user)
+    {
+        return repository.findByAuthor(user);
     }
 }

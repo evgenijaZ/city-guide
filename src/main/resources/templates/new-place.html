@@ -1,5 +1,6 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -24,9 +25,16 @@
             <li class="nav-item active">
                 <a class="nav-link" href="/home">Home</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/logout/form">Log in/out</a>
-            </li>
+            <div sec:authorize="!isAuthenticated()">
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Log in</a>
+                </li>
+            </div>
+            <div sec:authorize="isAuthenticated()">
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout/form">Log out</a>
+                </li>
+            </div>
         </ul>
     </div>
 </nav>
@@ -36,7 +44,7 @@
     <div class="card-header"></div>
     <div class="card-body mx-2">
         <form th:object="${place}" action="#" th:action="@{/place}" method="post">
-            <div class="form-group">
+                      <div class="form-group">
                 <label for="editPlaceFormName">Name</label>
                 <input type="text" class="form-control" th:field="*{name}" id="editPlaceFormName"
                        placeholder="Place name" maxlength="60" required>

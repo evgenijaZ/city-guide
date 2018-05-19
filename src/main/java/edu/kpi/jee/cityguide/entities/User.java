@@ -15,8 +15,8 @@ import java.util.Set;
 
 @Entity
 @Data
-@ToString(exclude = "roles")
-@EqualsAndHashCode(exclude = "roles")
+@ToString(exclude = {"roles","places"})
+@EqualsAndHashCode(exclude = {"roles","places"})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
     @Id
@@ -40,14 +40,7 @@ public class User {
     @JoinTable(name = "m2m_user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     @JsonManagedReference
     private Set<Role> roles;
-
-//    @OneToMany(mappedBy = "user")
-//    @JsonManagedReference
-//    private Set<Rating> ratings;
-
-//    public void ratePlace(Place place, float value) {
-//        Rating rating = new Rating(this, place, value);
-//        ratings.add(rating);
-//        place.addRating(rating);
-//    }
+    @OneToMany(mappedBy = "author")
+    @JsonManagedReference
+    private Set<Place> places;
 }

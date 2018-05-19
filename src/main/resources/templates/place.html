@@ -1,5 +1,6 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -24,9 +25,16 @@
             <li class="nav-item active">
                 <a class="nav-link" href="/home">Home</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/logout/form">Log in/out</a>
-            </li>
+            <div sec:authorize="!isAuthenticated()">
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Log in</a>
+                </li>
+            </div>
+            <div sec:authorize="isAuthenticated()">
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout/form">Log out</a>
+                </li>
+            </div>
         </ul>
     </div>
 </nav>
@@ -35,25 +43,30 @@
 <div class="card">
     <div class="card-header ">
         <ul class="nav nav-pills card-header-pills mx-2">
-            <li class="nav-item mx-1">
-                <form action="#" th:action="@{/place/new}" method="get">
-                    <button type="submit" class="btn btn-secondary">Add new</button>
-                </form>
-            </li>
-            <li class="nav-item mx-1">
-                <form action="#" th:action="@{/place/edit}" method="get">
-                    <input type="hidden" name="id" th:value="${place.id}"/>
-                    <button type="submit" class="btn btn-light">Edit</button>
-                </form>
-            </li>
-            <li  class="nav-item mx-1">
-                <form action="#" th:action="@{/place/delete}" method="post">
-                    <!--<button th:onclick="'javascript:putRequest(' + ${place.id} + ')'" type="submit">Delete</button>-->
-                    <input type="hidden" name="id" th:value="${place.id}"/>
-                    <button type="submit" class="btn btn-light">Delete</button>
-                </form>
-            </li>
-
+            <div sec:authorize="isAuthenticated()">
+                <li class="nav-item mx-1">
+                    <form action="#" th:action="@{/place/new}" method="get">
+                        <button type="submit" class="btn btn-secondary">Add new</button>
+                    </form>
+                </li>
+            </div>
+            <div th:if="${#authorization.expression('hasAuthority(''ADMIN'')') or isAuthor}">
+                <li class="nav-item mx-1">
+                    <form action="#" th:action="@{/place/edit}" method="get">
+                        <input type="hidden" name="id" th:value="${place.id}"/>
+                        <button type="submit" class="btn btn-light">Edit</button>
+                    </form>
+                </li>
+            </div>
+            <div th:if="${#authorization.expression('hasAuthority(''ADMIN'')') or isAuthor}">
+                <li class="nav-item mx-1">
+                    <form action="#" th:action="@{/place/delete}" method="post">
+                        <!--<button th:onclick="'javascript:putRequest(' + ${place.id} + ')'" type="submit">Delete</button>-->
+                        <input type="hidden" name="id" th:value="${place.id}"/>
+                        <button type="submit" class="btn btn-light">Delete</button>
+                    </form>
+                </li>
+            </div>
         </ul>
     </div>
     <div class="card-body mx-2">
@@ -69,7 +82,7 @@
                     <span class="badge badge-pill badge-info" th:text="${category.name}"></span>
                 </th:block>
                 <p class="lead" th:text="${place.description}"></p>
-                    <address th:text="'Address: '+${place.address}"></address>
+                <address th:text="'Address: '+${place.address}"></address>
             </div>
         </div>
         <div class="row my-2">
