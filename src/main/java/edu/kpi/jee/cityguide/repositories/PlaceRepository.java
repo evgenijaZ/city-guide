@@ -4,11 +4,15 @@ package edu.kpi.jee.cityguide.repositories;
 import edu.kpi.jee.cityguide.entities.City;
 import edu.kpi.jee.cityguide.entities.Place;
 import edu.kpi.jee.cityguide.entities.User;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface PlaceRepository extends JpaRepository<Place, Integer> {
+public interface   PlaceRepository extends JpaRepository<Place, Integer> {
+    @Cacheable("allPlaces")
+    List<Place> findAll();
+
     List<Place> findAllByNameContainsAndCity(String name, City city);
 
     List<Place> findAllByNameContains(String name);
